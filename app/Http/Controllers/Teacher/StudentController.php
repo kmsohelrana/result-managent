@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStudent;
 use App\Http\Requests\UpdateStudent;
 use App\Services\StudentService;
+use App\User;
 
 class StudentController extends Controller
 {
@@ -53,7 +54,18 @@ class StudentController extends Controller
 
     public function show($id)
     {
-        //
+        $where = array('id' => $id);
+        $user  = User::where($where)->first();
+        return response()->json($user);
+
+    }
+
+    public function getStudent($id)
+    {
+        $where = array('id' => $id);
+        $user  = User::where($where)->first();
+        return response()->json($user);
+
     }
 
 

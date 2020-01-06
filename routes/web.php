@@ -24,6 +24,7 @@ Route::group(['middleware' => ['auth','teacher'],'prefix'=>'teacher', 'namespace
     Route::resource('students', 'StudentController');
     Route::resource('courses', 'CourseController');
     Route::get('/marks/userId/{id}', 'MarksController@create')->name('marks.create');
+    Route::get('/students-bd/{id}', 'StudentController@getStudent');
 
     Route::post('/marks', 'MarksController@store')->name('marks.store');
 });
