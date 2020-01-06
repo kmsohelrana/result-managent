@@ -12,7 +12,7 @@
                             </div>
                         @endif
                         <div class="table">
-                               <a class="btn btn-success btn-sm float-right" href="{{ route('course.create') }}"><i class="fa fa-plus"></i>Add</a>
+                               <a class="btn btn-success btn-sm float-right" href="{{ route('courses.create') }}"><i class="fa fa-plus"></i>Add</a>
                             <table class="table">
                                 <thead>
                                 <tr>

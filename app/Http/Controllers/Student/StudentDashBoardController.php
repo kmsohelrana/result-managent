@@ -2,26 +2,38 @@
 
 namespace App\Http\Controllers\Student;
 
+use App\Http\Requests\UpdateStudent;
+use App\Services\UserService;
 use App\Student;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
 use Illuminate\Support\Facades\Auth;
 
 class StudentDashBoardController extends Controller
 {
+
+    protected $userService;
+
+    public function __construct()
+    {
+        $this->userService = new UserService();
+    }
+
+
     public function index()
     {
-        $student=Student::find(Auth::user()->id);
+        $student = $this->userService->getById();
 
         return view('student.home',compact('student'));
     }
 
-    public function studentEdit(){
-        $students=Student::find(Auth::user()->id);
+    public function studentEdit()
+    {
+        $students = $this->userService->getById();
 
         if(empty($students)){
-            abort(403, 'Unauthorized action.');
+            abort(404, 'Not Found');
         }
 
         return view('student.edit',compact('students'));
@@ -29,35 +41,28 @@ class StudentDashBoardController extends Controller
 
     public function showResult()
     {
+        $student = $this->userService->studentResult();
 
-        $student=Student::with('score.course')->find(Auth::user()->id);
-
-//        return response()->json($data);
-
-       return view ('student.result',compact('student'));
+        return view ('student.result',compact('student'));
     }
 
 
-    public function studentUpdate(Request $request)
+
+
+    public function studentUpdate(UpdateStudent $request)
     {
+        $validated = $request->validated();
 
-        $students=Student::find(Auth::user()->id);
+        $response = $this->userService->update($validated );
 
-        if(empty($students)){
-            abort(403, 'Unauthorized Action.');
+        if (is_null($response) === false) {
+            $message = "Data Updated Successfully Done";
+
+        } else {
+            $message = "Something Went Wrong";;
         }
 
-
-        $validatedData = $request->validate([
-            'name' => 'required',
-            'email' =>'required|email|unique:students,email,'.$students->id,
-            'phone' => 'required|unique:students,phone,'.$students->id,
-            'gender' => 'required',
-        ]);
-
-        $students->update($request->all());
-
-        session()->flash('status','Data Updated Successfully');
+        session()->flash("status",$message);
 
         return redirect()->route('student.home');
     }
@@ -69,9 +74,8 @@ class StudentDashBoardController extends Controller
             'image' => 'required',
         ]);
 
-        $student=Student::find(Auth::user()->id);
-
-        $student->image=$this->upload($request->image);
+        $student = $this->userService->getById();
+        $student->image = $this->upload($request->image);
         $student->save();
 
         session()->flash('status','Image Updated Successfully');

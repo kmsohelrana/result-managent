@@ -18,11 +18,8 @@
                             $i=0;
                             @endphp
 
-                            <input type="hidden" name="student_id" value="{{ $student->id }}">
-
-
-
-                        @foreach($data as $row)
+                            <input type="hidden" name="user_id" value="{{ $student->id }}">
+                            @foreach($data as $row)
 
                             <div class="form-group row">
                                 <label for="course_id" class="col-md-4 col-form-label text-md-right">{{ $row->name }}</label>

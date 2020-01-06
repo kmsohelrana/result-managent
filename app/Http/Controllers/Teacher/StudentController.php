@@ -3,17 +3,22 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
-use App\Student;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\StoreStudent;
+use App\Http\Requests\UpdateStudent;
+use App\Services\StudentService;
 
 class StudentController extends Controller
 {
+    protected  $studentService;
+
+    public function __construct()
+    {
+        $this->studentService = new StudentService();
+    }
 
     public function index()
     {
-        $data=Student::paginate(40);
-
+        $data = $this->studentService->index();
         return view ('teacher.student.index',compact('data'));
     }
 
@@ -24,28 +29,24 @@ class StudentController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(StoreStudent $request)
     {
-        $validatedData = $request->validate([
-            'name' => 'required',
-            'email' => 'required|unique:students|max:255',
-            'phone' => 'required|unique:students|max:255',
-            'gender' => 'required',
-        ]);
+        $validated = $request->validated();
 
-        $input = $request->only(['name', 'email','phone','gender']);
+        $response = $this->studentService->store($validated);
 
-        try{
+        if (is_null($response) === false) {
+            $message = "Data Inserted Successfully Done";
 
-            Student::student_create($input);
+        } else {
+            $message = "Something Went Wrong";;
 
-            session()->flash('status','Data Inserted Successfully');
-            return back();
-
-        } catch (\Exception $e){
-
-            return $e->getMessage();
         }
+
+        session()->flash("status",$message);
+
+        return redirect()->route('students.index');
+
 
     }
 
@@ -57,54 +58,55 @@ class StudentController extends Controller
 
 
     public function edit($id){
-        $students=Student::find($id);
+
+        $students = $this->studentService->getById($id);
 
         if(empty($students)){
-            abort(403, 'Unauthorized action.');
+            abort(404, 'Unauthorized Action.');
         }
 
         return view('teacher.student.edit',compact('students'));
     }
 
 
-    public function update(Request $request, $id)
+    public function update(UpdateStudent $request, $id)
     {
+        $validated = $request->validated();
 
-        $students=Student::find($id);
+        $response = $this->studentService->update($validated , $id);
 
-        if(empty($students)){
-            abort(403, 'Unauthorized Action.');
+        if (is_null($response) === false) {
+            $message = "Data Updated Successfully Done";
+
+        } else {
+            $message = "Something Went Wrong";;
         }
 
-
-        $validatedData = $request->validate([
-            'name' => 'required',
-            'email' =>'required|email|unique:students,email,'.$students->id,
-            'phone' => 'required|unique:students,phone,'.$students->id,
-            'gender' => 'required',
-        ]);
-
-        $students->update($request->all());
-
-        session()->flash('status','Data Updated Successfully');
+        session()->flash("status",$message);
 
         return redirect()->route('students.index');
-
 
     }
 
     public function destroy($id)
     {
-        $students=Student::find($id);
 
-        if(empty($students)){
-            abort(403, 'Unauthorized action.');
+        $student=$this->studentService->getById($id);
+        $response=$this->studentService->delete($student);
+
+        if (is_null($response) === false) {
+            $message = "Data Deleted Successfully Done";
+
+        } else {
+            $message = "Something Went Wrong";;
+
         }
 
-        $students->delete();
+        session()->flash("status",$message);
 
-        session()->flash('status','Data Deleted Successfully');
+//        session()->flash('status','Data Deleted Successfully');
 
         return back();
     }
+
 }

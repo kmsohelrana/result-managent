@@ -18,18 +18,29 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::group(['middleware' => 'auth:teacher','prefix'=>'teacher', 'namespace'=>'Teacher'], function (){
+
+Route::group(['middleware' => ['auth','teacher'],'prefix'=>'teacher', 'namespace'=>'Teacher'], function (){
     Route::get('/home', 'TeacherDashBoardController@index')->name('teacher.home');
     Route::resource('students', 'StudentController');
     Route::resource('courses', 'CourseController');
     Route::get('/marks/userId/{id}', 'MarksController@create')->name('marks.create');
 
     Route::post('/marks', 'MarksController@store')->name('marks.store');
-
-
 });
 
-Route::group(['middleware' => 'auth:student','prefix'=>'student', 'namespace'=>'Student'], function (){
+
+//Route::group(['middleware' => 'auth:teacher','prefix'=>'teacher', 'namespace'=>'Teacher'], function (){
+//    Route::get('/home', 'TeacherDashBoardController@index')->name('teacher.home');
+//    Route::resource('students', 'StudentController');
+//    Route::resource('courses', 'CourseController');
+//    Route::get('/marks/userId/{id}', 'MarksController@create')->name('marks.create');
+//
+//    Route::post('/marks', 'MarksController@store')->name('marks.store');
+//
+//
+//});
+
+Route::group(['middleware' => ['auth','student'],'prefix'=>'student', 'namespace'=>'Student'], function (){
     Route::get('/home', 'StudentDashBoardController@index')->name('student.home');
     Route::get('/student/edit', 'StudentDashBoardController@studentEdit')->name('student-edit');
     Route::post('/image/update', 'StudentDashBoardController@imageUpdate')->name('image.update');
@@ -37,6 +48,15 @@ Route::group(['middleware' => 'auth:student','prefix'=>'student', 'namespace'=>'
     Route::get('/view-result', 'StudentDashBoardController@showResult')->name('student.result');
 
 });
+
+//Route::group(['middleware' => 'auth:student','prefix'=>'student', 'namespace'=>'Student'], function (){
+//    Route::get('/home', 'StudentDashBoardController@index')->name('student.home');
+//    Route::get('/student/edit', 'StudentDashBoardController@studentEdit')->name('student-edit');
+//    Route::post('/image/update', 'StudentDashBoardController@imageUpdate')->name('image.update');
+//    Route::post('/student/update', 'StudentDashBoardController@studentUpdate')->name('student-update');
+//    Route::get('/view-result', 'StudentDashBoardController@showResult')->name('student.result');
+//
+//});
 
 Route::group(['prefix' => 'teacher'], function () {
 

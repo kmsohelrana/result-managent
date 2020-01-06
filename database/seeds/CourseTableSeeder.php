@@ -14,22 +14,18 @@ class CourseTableSeeder extends Seeder
         \DB::table('courses')->insert([
             [
                 'name' => 'Bangla',
-
                 'created_at' => \Carbon\Carbon::now(),
             ],
             [
                 'name' => 'English',
-
                 'created_at' => \Carbon\Carbon::now(),
             ],
             [
                 'name' => 'Math',
-
                 'created_at' => \Carbon\Carbon::now(),
             ],
             [
                 'name' => 'Social Science',
-
                 'created_at' => \Carbon\Carbon::now(),
             ],
         ]);
